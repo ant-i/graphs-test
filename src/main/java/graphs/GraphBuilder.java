@@ -19,8 +19,8 @@ public class GraphBuilder {
     }
 
     @NonNull
-    public <N> Graph<N> build() {
-        return new SimpleMutableGraph<>(directed);
+    public <N> MutableGraph<N> build() {
+        return new SimpleMutableGraph<N>(directed);
     }
 
 }
