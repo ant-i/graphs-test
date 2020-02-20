@@ -2,6 +2,10 @@ package graphs;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.util.Arrays;
+import java.util.function.BooleanSupplier;
+import java.util.stream.IntStream;
+
 /**
  * An extension of {@linkplain Graph} which allows mutation to the graph.
  * Mainly to basic operations - add vertex and add edge.
@@ -29,5 +33,29 @@ public interface MutableGraph<N> extends Graph<N> {
      * @return {@code true} if edge was successfully added
      */
     boolean addEdge(@NonNull N nodeU, @NonNull N nodeV);
+
+    /**
+     * Connects a node {@code nodeU} with multiple nodes {@code withNodesV}
+     * and returns a boolean array that represents each successful result associated
+     * with {@code withNodesV}
+     * <p>
+     * Calls {@link #addEdge(N, N)}
+     *
+     * @param nodeU      node u
+     * @param withNodesV nodes v
+     * @return booleans for each {@link #addEdge(N, N)} associated with nodes v
+     */
+    default boolean[] connect(@NonNull N nodeU, @NonNull N[] withNodesV) {
+        if (null == withNodesV || withNodesV.length == 0) {
+            throw new IllegalArgumentException("[withNodesV] must not be empty");
+        }
+
+        var connections = new boolean[withNodesV.length];
+        for (int i = 0; i < withNodesV.length; i++) {
+            connections[i] = addEdge(nodeU, withNodesV[i]);
+        }
+
+        return connections;
+    }
 
 }

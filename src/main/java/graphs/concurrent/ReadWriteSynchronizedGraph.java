@@ -54,6 +54,16 @@ public class ReadWriteSynchronizedGraph<N> implements MutableGraph<N> {
     }
 
     @Override
+    public boolean[] connect(@NonNull N nodeU, @NonNull N[] withNodesV) {
+        readWriteLock.writeLock().lock();
+        try {
+            return delegate.connect(nodeU, withNodesV);
+        } finally {
+            readWriteLock.writeLock().unlock();
+        }
+    }
+
+    @Override
     public @NonNull List<GraphEdge<N>> getPath(@NonNull N source, @NonNull N target) {
         readWriteLock.readLock().lock();
         try {

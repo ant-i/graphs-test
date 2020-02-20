@@ -5,8 +5,7 @@ import spock.lang.Unroll
 import test.utils.Any
 
 /**
- * TODO Document me
- *
+ * @see SimpleMutableGraph
  * @author antonovia
  * @since 2/16/2020
  */
@@ -101,6 +100,38 @@ class SimpleMutableGraphTest extends Specification {
 
         and:
         g.edges.size() == 4
+    }
+
+    @Unroll
+    def "#connect #u to multiple of #vs"() {
+        given:
+        def g = new SimpleMutableGraph<Integer>(false)
+
+        when:
+        g.connect(1, null)
+
+        then:
+        thrown(IllegalArgumentException)
+
+        when:
+        g.connect(1, [] as Integer[])
+
+        then:
+        thrown(IllegalArgumentException)
+
+        when:
+        def isConnected = g.connect(u, vs.toArray { i -> new Integer[i] })
+
+        then:
+        Arrays.equals(conn as boolean[], isConnected)
+
+        and:
+        g.edges.containsAll(toSetOfEdges(edges))
+
+        where:
+        u | vs        || conn                || edges
+        1 | [2, 3, 4] || [true] * 3          || [[1, 2], [1, 3], [1, 4]]
+        1 | [2, 2, 3] || [true, false, true] || [[1, 2], [1, 3]]
     }
 
     def "Connecting ordered nodes in directed graph"() {
@@ -233,6 +264,7 @@ class SimpleMutableGraphTest extends Specification {
     /*
     A simple one node graph
     */
+
     private static Graph<Integer> graph1() {
         def g = newUndirected()
         g.addVertex(1)
@@ -244,6 +276,7 @@ class SimpleMutableGraphTest extends Specification {
     A simple graph with two nodes and one edge connecting them
     1 - 2
     */
+
     private static Graph<Integer> graph2() {
         def g = newUndirected()
         g.addEdge(1, 2)
@@ -257,6 +290,7 @@ class SimpleMutableGraphTest extends Specification {
       /
     4
     */
+
     private static Graph<Integer> graph3() {
         def g = newUndirected()
         g.addVertex(1)
@@ -272,6 +306,7 @@ class SimpleMutableGraphTest extends Specification {
     |   |
     3 - 4
     */
+
     private static Graph<Integer> graph4() {
         def g = newUndirected()
         g.addEdge(1, 2)
@@ -290,6 +325,7 @@ class SimpleMutableGraphTest extends Specification {
           ↘↖
             4
     */
+
     private static Graph<Integer> graph5() {
         def g = newDirected()
         g.addEdge(1, 2)
@@ -311,26 +347,19 @@ class SimpleMutableGraphTest extends Specification {
     ↓                  ↑
     + -> ------>-----> +
     */
+
     private static Graph<Integer> graph6() {
         def g = newDirected()
-        g.addEdge(1, 2)
-        g.addEdge(1, 3)
-        g.addEdge(1, 7)
-        g.addEdge(2, 4)
-        g.addEdge(2, 3)
-        // Cyclic edge
-        g.addEdge(2, 2)
+        g.connect(1, [2, 3, 7] as Integer[])
+        // With a cyclic edge 2 -> 2
+        g.connect(2, [4, 3, 2] as Integer[])
+        g.connect(3, [1, 4, 5, 6] as Integer[])
+        g.connect(7, [8, 9] as Integer[])
 
-        g.addEdge(3, 1)
-        g.addEdge(3, 4)
-        g.addEdge(3, 5)
-        g.addEdge(3, 6)
         g.addEdge(5, 7)
-        g.addEdge(7, 8)
         g.addEdge(8, 4)
         g.addEdge(6, 9)
         g.addEdge(9, 6)
-        g.addEdge(7, 9)
 
         return g
     }
