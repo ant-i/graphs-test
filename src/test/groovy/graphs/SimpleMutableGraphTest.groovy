@@ -182,6 +182,11 @@ class SimpleMutableGraphTest extends Specification {
         graph6() | 1 | 4 || Any.of([[1, 2], [2, 4]], [[1, 3], [3, 4]])
         graph6() | 9 | 8 || [[9, 6], [6, 3], [3, 5], [5, 7], [7, 8]]
         graph6() | 8 | 1 || []
+        // Cyclic edges
+        graph6() | 2 | 2 || [[2, 2]]
+        graph6() | 1 | 2 || [[1, 2]]
+        graph6() | 1 | 4 || [[1, 2], [2, 4]]
+        graph6() | 1 | 1 || []
     }
 
     private static SimpleMutableGraph<Integer> newUndirected() {
@@ -297,6 +302,7 @@ class SimpleMutableGraphTest extends Specification {
 
     /*
     More complex directed graph
+      ⟲
       2 -> 4 <- 8
      ↗ ↘↖ ↗       ↖
     1 <> 3 -> 5 -> 7 <-+
@@ -312,6 +318,9 @@ class SimpleMutableGraphTest extends Specification {
         g.addEdge(1, 7)
         g.addEdge(2, 4)
         g.addEdge(2, 3)
+        // Cyclic edge
+        g.addEdge(2, 2)
+
         g.addEdge(3, 1)
         g.addEdge(3, 4)
         g.addEdge(3, 5)
